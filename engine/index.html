@@ -1,22 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-    <title>Engine | Demo</title>
+    <title>发动机教学拆装训练 Demo</title>
 </head>
 <body>
-    <img src="images/logo.svg" width="200px">
-    <div class="controls">
-        <button id="run-stop" disabled>Run</button>
-        <button id="disassemble" disabled>Disassemble</button>
-        <button id="disassemble-static" disabled>Static Disassemble</button>
-        <button id="assemble" disabled>Assemble</button>
-        <button id="assemble-static" disabled>Static Assemble</button>
+    <div class="app-shell">
+        <header class="hud">
+            <div class="brand">
+                <div class="brand-lockup">
+                    <img class="brand-mark" src="images/logo.svg" alt="Engine Demo">
+                    <div>
+                        <p class="eyebrow">Three.js Mechanical Training Demo</p>
+                        <h1>发动机教学拆装训练台</h1>
+                    </div>
+                </div>
+                <p class="brand-copy">围绕训练目标设计：步骤锁定、目标高亮、错误提示、自动示范与结果反馈。</p>
+            </div>
+
+            <div class="status-cluster">
+                <article class="metric-card">
+                    <span>训练进度</span>
+                    <strong id="progress-value">0 / 6</strong>
+                </article>
+                <article class="metric-card">
+                    <span>准确率</span>
+                    <strong id="accuracy-value">100%</strong>
+                </article>
+                <article class="metric-card">
+                    <span>训练得分</span>
+                    <strong id="score-value">100</strong>
+                </article>
+                <article class="metric-card">
+                    <span>当前模式</span>
+                    <strong id="mode-value">加载中</strong>
+                </article>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <aside class="panel panel-left">
+                <div class="panel-top">
+                    <span class="panel-tag" id="step-tag">准备中</span>
+                    <h2 id="step-title">正在加载发动机模型</h2>
+                    <p id="step-summary">模型加载完成后，你可以围绕当前高亮零件执行按步骤拆卸训练。</p>
+                </div>
+
+                <div class="detail-grid">
+                    <article class="detail-card">
+                        <span>训练目标</span>
+                        <strong id="step-objective">建立可操作的拆装训练顺序</strong>
+                    </article>
+                    <article class="detail-card">
+                        <span>观察重点</span>
+                        <strong id="step-observe">识别零件组与机体核心的连接关系</strong>
+                    </article>
+                    <article class="detail-card">
+                        <span>动作说明</span>
+                        <strong id="step-action">点击当前高亮零件组即可执行该步拆卸</strong>
+                    </article>
+                </div>
+
+                <section class="check-panel">
+                    <div class="section-head">
+                        <span>通过条件</span>
+                        <strong id="mistake-value">误操作 0 次</strong>
+                    </div>
+                    <ul id="step-checklist" class="checklist">
+                        <li>等待模型加载完成</li>
+                        <li>观察视角与目标高亮区域</li>
+                        <li>开始第一步拆装训练</li>
+                    </ul>
+                </section>
+
+                <section class="control-panel">
+                    <div class="section-head">
+                        <span>训练控制</span>
+                        <strong id="hint-value">提示 0 次</strong>
+                    </div>
+                    <div class="control-grid">
+                        <button id="hint-button" type="button" disabled>提示镜头</button>
+                        <button id="demo-button" type="button" disabled>示范当前步</button>
+                        <button id="run-toggle" type="button" class="ghost" disabled>运转观察</button>
+                        <button id="auto-demo" type="button" class="ghost" disabled>自动演示</button>
+                    </div>
+                    <button id="reset-button" type="button" class="wide ghost" disabled>重新训练</button>
+                </section>
+            </aside>
+
+            <section class="viewport-wrap">
+                <div id="scene-root" class="scene-root" aria-label="发动机三维视图"></div>
+
+                <div class="viewport-card">
+                    <span class="viewport-tag">当前目标</span>
+                    <h3 id="focus-title">等待模型加载</h3>
+                    <p id="focus-copy">加载完成后，点击高亮零件组即可执行对应的拆装步骤。</p>
+                </div>
+
+                <div id="toast" class="toast" aria-live="polite"></div>
+
+                <div id="loading-overlay" class="loading-overlay">
+                    <div class="loading-card">
+                        <span>模型装载中</span>
+                        <strong id="loading-text">准备载入发动机总成</strong>
+                        <div class="loading-bar">
+                            <i id="loading-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="panel panel-right">
+                <div class="section-head">
+                    <span>训练流程</span>
+                    <strong id="step-counter">0 / 6 已完成</strong>
+                </div>
+                <div id="step-list" class="step-list"></div>
+
+                <section class="legend-card">
+                    <span>交互规则</span>
+                    <p>只允许拆卸当前步骤的高亮零件。点击错误零件会记入误操作，并提示应优先执行的步骤。</p>
+                </section>
+            </aside>
+        </main>
     </div>
 
     <script src="js/three.js"></script>
